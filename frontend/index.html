@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Business Analyzer Pro</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+
+<div id="pageLoader" class="page-loader">
+    <div class="loader-card">
+        <div class="loader-ring"></div>
+        <h2>AI Business Analyzer Pro</h2>
+        <p>Preparing your intelligent workspace...</p>
+    </div>
+</div>
+
+<aside class="sidebar">
+
+    <div>
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-chart-column"></i>
+            </div>
+
+            <div>
+                <h2>AI Business</h2>
+                <span>Analyzer Pro</span>
+            </div>
+        </div>
+
+        <nav>
+            <a class="active" onclick="showSection('upload', this)">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a onclick="showSection('upload', this)">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Upload Data</span>
+            </a>
+
+            <a onclick="openChatModal(this)">
+                <i class="fa-solid fa-comments"></i>
+                <span>AI Data Chat</span>
+            </a>
+
+            <a onclick="showSection('analytics', this)">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Analytics</span>
+            </a>
+
+            <a onclick="openForecastFromSidebar(this)">
+                <i class="fa-solid fa-chart-simple"></i>
+                <span>Generate Forecast</span>
+            </a>
+
+            <a onclick="openExportFromSidebar(this)">
+                <i class="fa-solid fa-file-pdf"></i>
+                <span>Export Report</span>
+            </a>
+
+            <a onclick="openSettings(this)">
+                <i class="fa-solid fa-gear"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+    </div>
+
+    <div class="sidebar-bottom">
+        <div class="ai-box">
+            <div class="bot-icon">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+
+            <h3>Local AI Engine</h3>
+            <p>FastAPI + Ollama running locally with no paid API.</p>
+        </div>
+    </div>
+
+</aside>
+
+<main class="main">
+
+    <header class="header">
+        <div>
+            <h1>Business Intelligence <span>Dashboard</span></h1>
+            <p>Analyze CSV/Excel files, chat with data, forecast trends and export professional reports.</p>
+        </div>
+
+        <div class="header-actions">
+            <button class="icon-btn" onclick="openChatModal()">
+                <i class="fa-solid fa-comments"></i>
+            </button>
+
+            <button class="icon-btn" onclick="toggleTheme()">
+                <i class="fa-solid fa-moon"></i>
+                <i class="fa-solid fa-sun"></i>
+            </button>
+        </div>
+    </header>
+
+    <section class="upload-card" id="upload">
+        <div class="upload-left">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+        </div>
+
+        <div class="upload-center">
+            <h2>Upload Business Data</h2>
+            <p>Choose one or multiple CSV / Excel files for AI-powered business analysis.</p>
+
+            <div class="upload-actions">
+                <label for="fileInput" class="upload-btn">
+                    <i class="fa-solid fa-folder-open"></i>
+                    Choose Files
+                </label>
+
+                <input type="file" id="fileInput" accept=".csv,.xlsx" multiple>
+
+                <button id="analyzeBtn" type="button">
+                    <i class="fa-solid fa-brain"></i>
+                    Analyze Data
+                </button>
+            </div>
+
+            <div id="selectedFileName">No files selected</div>
+
+            <small>Supports CSV, Excel and multi-file upload</small>
+
+            <div id="message"></div>
+        </div>
+
+        <div class="upload-right">
+            <div class="csv-card">AI</div>
+            <i class="fa-solid fa-file-excel"></i>
+        </div>
+    </section>
+
+    <section class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon blue">
+                <i class="fa-solid fa-table"></i>
+            </div>
+            <div>
+                <p>Total Rows</p>
+                <h2 id="rows">0</h2>
+                <span>Records analyzed</span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon green">
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <div>
+                <p>Total Columns</p>
+                <h2 id="columns">0</h2>
+                <span>Detected fields</span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon purple">
+                <i class="fa-solid fa-arrow-trend-up"></i>
+            </div>
+            <div>
+                <p>Total Sales</p>
+                <h2 id="sales">$0</h2>
+                <span>Revenue sum</span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon orange">
+                <i class="fa-solid fa-dollar-sign"></i>
+            </div>
+            <div>
+                <p>Total Profit</p>
+                <h2 id="profit">$0</h2>
+                <span>Sales minus cost</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="charts-grid" id="analytics">
+        <div class="panel chart-panel">
+            <h2><i class="fa-solid fa-chart-column"></i> Sales by Product</h2>
+            <p>Product performance comparison.</p>
+            <canvas id="productChart"></canvas>
+        </div>
+
+        <div class="panel chart-panel">
+            <h2><i class="fa-solid fa-chart-pie"></i> Sales by Region</h2>
+            <p>Regional revenue distribution.</p>
+            <canvas id="regionChart"></canvas>
+        </div>
+    </section>
+
+    <section class="bottom-grid">
+
+        <div class="panel">
+            <h2><i class="fa-solid fa-list-check"></i> Detected Columns</h2>
+            <p>Dataset structure automatically identified.</p>
+
+            <div id="columnList" class="column-list">
+                <div class="empty-state">No file analyzed yet.</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-head">
+                <div>
+                    <h2><i class="fa-solid fa-table"></i> Data Preview</h2>
+                    <p>First rows from your uploaded dataset.</p>
+                </div>
+            </div>
+
+            <div id="dataPreview" class="table-box">
+                <p>No data preview yet.</p>
+            </div>
+        </div>
+
+        <div class="panel ai-report-panel">
+            <h2><i class="fa-solid fa-brain"></i> AI Business Report</h2>
+            <p>Generated by local Ollama AI model.</p>
+
+            <div id="result" class="ai-report">
+                Upload a file to start AI analysis.
+            </div>
+        </div>
+
+    </section>
+
+    <section class="panel forecast-panel" id="forecast">
+        <div class="panel-head">
+            <div>
+                <h2><i class="fa-solid fa-chart-line"></i> AI Sales Forecast</h2>
+                <p>Predict future performance from uploaded business data.</p>
+            </div>
+        </div>
+
+        <div class="forecast-grid">
+            <div class="forecast-card">
+                <p>Predicted Next Sales</p>
+                <h3 id="forecastSales">$0</h3>
+            </div>
+
+            <div class="forecast-card">
+                <p>Expected Profit</p>
+                <h3 id="forecastProfit">$0</h3>
+            </div>
+
+            <div class="forecast-card">
+                <p>Growth Trend</p>
+                <h3 id="forecastTrend">---</h3>
+            </div>
+        </div>
+
+        <div class="forecast-report" id="forecastReport">
+            Forecast report will appear here.
+        </div>
+    </section>
+
+</main>
+
+<div class="chat-modal" id="chatModal">
+    <div class="chat-window">
+        <div class="chat-header">
+            <div>
+                <h2><i class="fa-solid fa-comments"></i> Chat with Business Data</h2>
+                <p>Ask questions about your uploaded CSV/Excel files.</p>
+            </div>
+
+            <button onclick="closeChatModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div id="chatBox" class="chat-box">
+            <div class="chat-message ai">
+                Upload and analyze your data first, then ask me anything about sales, profit, region or strategy.
+            </div>
+        </div>
+
+        <div class="chat-input-row">
+            <input type="text" id="chatInput" placeholder="Ask: Which product performs best?">
+            <button id="chatBtn" type="button">
+                <i class="fa-solid fa-paper-plane"></i>
+                Ask AI
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="action-modal" id="actionModal">
+    <div class="action-box">
+        <button class="close-btn" onclick="closeActionModal()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="action-icon" id="actionIcon">
+            <i class="fa-solid fa-bolt"></i>
+        </div>
+
+        <h2 id="actionTitle">Action</h2>
+        <p id="actionText">Choose an action to continue.</p>
+
+        <button class="action-main-btn" id="actionMainBtn">
+            Continue
+        </button>
+    </div>
+</div>
+
+<div class="settings-modal" id="settingsModal">
+    <div class="settings-box">
+
+        <div class="settings-header">
+            <div>
+                <h2><i class="fa-solid fa-gear"></i> Settings</h2>
+                <p>Manage appearance, account options and dashboard preferences.</p>
+            </div>
+
+            <button class="close-btn" onclick="closeSettings()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="settings-grid">
+            <div class="setting-item">
+                <div class="setting-icon">
+                    <i class="fa-solid fa-palette"></i>
+                </div>
+
+                <div>
+                    <h3>Appearance</h3>
+                    <p>Switch between professional light and dark mode.</p>
+                </div>
+
+                <button onclick="toggleTheme()">Switch Mode</button>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-icon">
+                    <i class="fa-solid fa-user-lock"></i>
+                </div>
+
+                <div>
+                    <h3>Account</h3>
+                    <p>Login placeholder for future authentication.</p>
+                </div>
+
+                <button class="login-btn">Login</button>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-icon">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </div>
+
+                <div>
+                    <h3>Session</h3>
+                    <p>Logout placeholder for future account system.</p>
+                </div>
+
+                <button class="logout-btn">Logout</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
