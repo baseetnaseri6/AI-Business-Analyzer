@@ -1,5 +1,4 @@
 # AI Business Analyzer Pro 
-
 Modern AI-powered Business Intelligence Dashboard built with:
 
 - FastAPI
